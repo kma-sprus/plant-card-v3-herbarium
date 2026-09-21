@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="All 50 species from the Plant Card v3 staging wave, in five languages, with the validators' corrections marked.">
+<style>
+:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Wave One Herbarium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+
+<style>
+:root{
+  --ground:#F6F8F4; --surface:#FFFFFF; --sunk:#EDF1EA;
+  --ink:#15201A; --muted:#5E6C64; --faint:#8B9890;
+  --line:#DCE3D9; --line-soft:#E8EDE4;
+  --accent:#2E6B4C; --accent-soft:#E2EFE7; --ochre:#8A6A2C;
+  --toxic:#A8402B; --toxic-soft:#F6E5E1;
+  --caution:#8E6A15; --caution-soft:#F7EFDC;
+  --safe:#2E6B4C; --safe-soft:#E2EFE7;
+  --shadow:0 1px 2px rgba(21,32,26,.06), 0 8px 24px -16px rgba(21,32,26,.28);
+  --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Spectral",ui-serif,Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#10140F; --surface:#181D18; --sunk:#1F251F;
+  --ink:#E7ECE5; --muted:#9BA99F; --faint:#77857C;
+  --line:#2A312A; --line-soft:#232A23;
+  --accent:#6FB68C; --accent-soft:#1D2A22; --ochre:#C9A45E;
+  --toxic:#E08B78; --toxic-soft:#2E1F1B;
+  --caution:#D9B356; --caution-soft:#2A2315;
+  --safe:#6FB68C; --safe-soft:#1D2A22;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  --ground:#10140F; --surface:#181D18; --sunk:#1F251F;
+  --ink:#E7ECE5; --muted:#9BA99F; --faint:#77857C;
+  --line:#2A312A; --line-soft:#232A23;
+  --accent:#6FB68C; --accent-soft:#1D2A22; --ochre:#C9A45E;
+  --toxic:#E08B78; --toxic-soft:#2E1F1B;
+  --caution:#D9B356; --caution-soft:#2A2315;
+  --safe:#6FB68C; --safe-soft:#1D2A22;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:minmax(300px,360px) 1fr;height:100%}
+@media (max-width:860px){.app{grid-template-columns:1fr}}
+
+/* ---------- index rail ---------- */
+.rail{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--surface)}
+.masthead{padding:16px 16px 12px;border-bottom:1px solid var(--line-soft)}
+.wordmark{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.wordmark h1{margin:0;font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:-.01em}
+.wordmark .env{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--ochre);border:1px solid currentColor;border-radius:3px;padding:1px 5px}
+.tagline{margin:4px 0 0;color:var(--muted);font-size:12.5px}
+.controls{display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line-soft)}
+.search{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--ground)}
+.search::placeholder{color:var(--faint)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters select{flex:1 1 auto;min-width:0;padding:6px 8px;border:1px solid var(--line);border-radius:7px;background:var(--ground);font-size:12.5px}
+.chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer}
+.tally{padding:8px 16px;font-family:var(--mono);font-size:11px;color:var(--faint);border-bottom:1px solid var(--line-soft);display:flex;justify-content:space-between;gap:8px}
+.list{overflow-y:auto;flex:1;min-height:0}
+.row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 16px;background:none;border:0;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.row:hover{background:var(--sunk)}
+.row[aria-current="true"]{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.chip{width:34px;height:34px;border-radius:6px;display:grid;place-items:center;font-family:var(--serif);font-size:15px;font-weight:600;font-style:italic;color:#fff}
+.row .nm{min-width:0}
+.row .bn{font-family:var(--serif);font-style:italic;font-size:14.5px;line-height:1.3;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .cn{color:var(--muted);font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk{font-family:var(--mono);font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
+.flag{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--caution);margin-left:5px;vertical-align:middle}
+
+/* ---------- detail ---------- */
+.detail{overflow-y:auto;min-height:0;scroll-behavior:smooth}
+.sheet{max-width:860px;margin:0 auto;padding:0 20px 64px}
+@media (max-width:860px){
+  .app>.rail{display:flex}
+  .app.reading>.rail{display:none}
+  .app>.detail{display:none}
+  .app.reading>.detail{display:block}
+  .sheet{padding:0 16px 48px}
+}
+.back{display:none;margin:12px 0 0;padding:6px 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface);cursor:pointer;font-size:12.5px}
+@media (max-width:860px){.back{display:inline-block}}
+
+.specimen{padding:22px 0 16px;border-bottom:1px solid var(--line)}
+.crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.crumbs .sep{opacity:.5}
+.binom{margin:6px 0 2px;font-family:var(--serif);font-size:clamp(25px,5vw,34px);font-weight:600;font-style:italic;line-height:1.12;text-wrap:balance}
+.binom .cv{font-style:normal}
+.vern{margin:0;color:var(--muted);font-size:15px}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:12px;border:1px solid transparent;background:var(--sunk);color:var(--muted)}
+.badge b{font-weight:600;color:var(--ink)}
+.badge.tox{background:var(--toxic-soft);color:var(--toxic);border-color:color-mix(in srgb,var(--toxic) 30%,transparent)}
+.badge.ok{background:var(--safe-soft);color:var(--safe);border-color:color-mix(in srgb,var(--safe) 30%,transparent)}
+.badge.warn{background:var(--caution-soft);color:var(--caution);border-color:color-mix(in srgb,var(--caution) 35%,transparent)}
+
+.tabs{display:flex;gap:2px;align-items:center;flex-wrap:wrap;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);padding:10px 0;border-bottom:1px solid var(--line-soft);margin-bottom:4px}
+.tab{padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;font-size:12.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.tabs .spacer{flex:1}
+
+section{padding:22px 0;border-bottom:1px solid var(--line-soft)}
+section:last-child{border-bottom:0}
+h2{margin:0 0 12px;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.11em;color:var(--faint);font-weight:500}
+h3{margin:0 0 4px;font-size:14px;font-weight:600}
+p{margin:0 0 10px;max-width:68ch}
+.prose{font-family:var(--serif);font-size:15.5px;line-height:1.65}
+.prose strong{font-weight:600}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:8px;overflow:hidden}
+.cellv{background:var(--surface);padding:9px 11px;min-width:0}
+.cellv dt{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:2px}
+.cellv dd{margin:0;font-size:13.5px;overflow-wrap:anywhere}
+.cellv.fixed{background:var(--caution-soft)}
+.cellv .was{display:block;font-size:11px;color:var(--caution);margin-top:2px}
+
+.blocks{display:flex;flex-direction:column;gap:14px}
+.blk{background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;padding:12px 14px}
+.blk ul{margin:6px 0 0;padding-left:18px}
+.blk li{margin:3px 0}
+.blk .lead{margin:0;color:var(--ink)}
+
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:700px){.cmp{grid-template-columns:1fr}}
+.cmp .side{min-width:0}
+.cmp .side>.lbl{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:4px}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+.scroller{overflow-x:auto;border:1px solid var(--line-soft);border-radius:8px;background:var(--surface)}
+th,td{text-align:left;padding:7px 11px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:500}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+td.wrap{white-space:normal;min-width:220px}
+
+.tips{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.tip{background:var(--surface);border:1px solid var(--line-soft);border-left:3px solid var(--accent);border-radius:6px;padding:9px 11px;font-size:13px}
+.tip.issue{border-left-color:var(--ochre)}
+.tip .src{display:block;margin-top:5px;font-family:var(--mono);font-size:10.5px;color:var(--faint);overflow-wrap:anywhere}
+
+.faq{border-bottom:1px solid var(--line-soft);padding:9px 0}
+.faq:last-child{border-bottom:0}
+.faq summary{cursor:pointer;font-weight:500}
+.faq p{margin:7px 0 0;color:var(--muted)}
+
+.note{background:var(--sunk);border-left:3px solid var(--ochre);border-radius:0 6px 6px 0;padding:10px 13px;font-size:12.5px;color:var(--muted);max-width:68ch}
+.note b{color:var(--ink)}
+.empty{padding:56px 20px;text-align:center;color:var(--muted)}
+.empty .big{font-family:var(--serif);font-style:italic;font-size:21px;color:var(--ink);margin-bottom:6px}
+.mono{font-family:var(--mono);font-size:12px}
+.kv{display:flex;gap:7px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.kv span{background:var(--sunk);padding:2px 7px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="rail">
+    <div class="masthead">
+      <div class="wordmark">
+        <h1>Wave One Herbarium</h1>
+        <span class="env" id="env">staging</span>
+      </div>
+      <p class="tagline">50 species generated with gpt&#8209;5.4, localized into five languages.</p>
+    </div>
+
+    <div class="controls">
+      <input class="search" id="q" type="search" placeholder="Search binomial, common name, family…" aria-label="Search species">
+      <div class="filters">
+        <select id="fTox" aria-label="Filter by toxicity"><option value="">All toxicity</option></select>
+        <select id="fCare" aria-label="Filter by care level"><option value="">All care levels</option></select>
+      </div>
+      <label class="chk"><input type="checkbox" id="fFix"> Only species the validators corrected</label>
+    </div>
+
+    <div class="tally"><span id="count">—</span><span id="cost">—</span></div>
+    <div class="list" id="list" role="list"></div>
+  </div>
+
+  <div class="detail" id="detail">
+    <div class="sheet" id="sheet">
+      <div class="empty">
+        <div class="big">Pick a specimen</div>
+        <p>Ranked by blended popularity across views, scans and user photos.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LANG_NAME = { en:'English', es:'Español', de:'Deutsch', fr:'Français', pt:'Português' };
+const NEEDS = ['sunlight','water','soil','soilPH','temperature','humidity','fertilizer','container','placement','pruning','propagation','winterCare','repottingAndTransplanting'];
+const GUIDE = ['watering','fertilize','repotting','cleaning','inspection','monitoring','humidity','cutting','support','mulching','aeration'];
+const LABEL = {
+  sunlight:'Sunlight', water:'Water', soil:'Soil', soilPH:'Soil pH', temperature:'Temperature',
+  humidity:'Humidity', fertilizer:'Fertilizer', container:'Container', placement:'Placement',
+  pruning:'Pruning', propagation:'Propagation', winterCare:'Winter care',
+  repottingAndTransplanting:'Repotting & transplanting', watering:'Watering', fertilize:'Feeding',
+  repotting:'Repotting', cleaning:'Cleaning', inspection:'Inspection', monitoring:'Monitoring',
+  cutting:'Cutting', support:'Support', mulching:'Mulching', aeration:'Aeration',
+};
+const REQ = [
+  ['lightRequirements','Light'], ['lightRequirementsDetail','Light, in practice'],
+  ['wateringNeeds','Watering'], ['humidity','Humidity'], ['soilType','Soil'],
+  ['soilPH','Soil pH'], ['fertilization','Fertilizer'], ['placement','Placement'],
+  ['containerSize','Pot size'], ['containerSizeLabel','Pot class'],
+  ['temperatureRange','Temperature'], ['temperatureRangeLabel','Temperature class'],
+];
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// The generated prose marks the binomial with **…**, the way a botanical key bolds it.
+const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+// Taxonomic setting: the binomial is italic, a cultivar epithet in quotes is not.
+const binom = (n) => esc(n).replace(/(&quot;[^&]*?&quot;|'[^']*?')/g, '<span class="cv">$1</span>');
+const hue = (s) => { let h = 0; for (const c of String(s ?? '')) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+
+let INDEX = [], CUR = null, LANG = 'en', COMPARE = false;
+const CACHE = new Map();
+const $ = (id) => document.getElementById(id);
+
+function badgeClass(t) {
+  if (t === 'Non-toxic') return 'ok';
+  if (t === 'Toxic') return 'tox';
+  return 'warn';
+}
+
+function renderList() {
+  const q = $('q').value.trim().toLowerCase();
+  const tox = $('fTox').value, care = $('fCare').value, onlyFix = $('fFix').checked;
+  const rows = INDEX.filter((s) =>
+    (!q || [s.botanicalName, s.commonName, s.family, s.genus].some((v) => String(v ?? '').toLowerCase().includes(q)))
+    && (!tox || s.toxicity === tox) && (!care || s.careLevel === care) && (!onlyFix || s.fixes > 0));
+
+  $('count').textContent = `${rows.length} of ${INDEX.length} species`;
+  $('cost').textContent = `$${rows.reduce((n, s) => n + s.cost, 0).toFixed(2)}`;
+
+  $('list').innerHTML = rows.map((s) => `
+    <button class="row" role="listitem" data-id="${s.id}" aria-current="${CUR && CUR.id === s.id}">
+      <span class="chip" style="background:hsl(${hue(s.family)} 32% 38%)">${esc((s.genus || s.botanicalName || '?')[0])}</span>
+      <span class="nm">
+        <span class="bn">${binom(s.botanicalName)}</span>
+        <span class="cn">${esc(s.commonName || '—')}${s.fixes ? '<i class="flag" title="Validators corrected a field"></i>' : ''}</span>
+      </span>
+      <span class="rk">#${s.rank}</span>
+    </button>`).join('') || '<div class="empty"><p>Nothing matches those filters.</p></div>';
+}
+
+async function open(id) {
+  if (!CACHE.has(id)) {
+    const r = await fetch(`data/sp-${id}.json`);
+    if (!r.ok) throw new Error(`could not load species ${id}`);
+    CACHE.set(id, await r.json());
+  }
+  CUR = CACHE.get(id);
+  if (!CUR.content[LANG]) LANG = 'en';
+  document.getElementById('app').classList.add('reading');
+  renderList();
+  renderDetail();
+  $('detail').scrollTop = 0;
+}
+
+function fixMap(entry) {
+  const m = new Map();
+  for (const v of entry.validation ?? []) m.set(String(v.field).split('.').pop(), v);
+  return m;
+}
+
+function blocks(obj, keys, other) {
+  return keys.filter((k) => obj?.[k]).map((k) => {
+    const b = obj[k], o = other?.[k];
+    const one = (x) => `<p class="lead">${esc(x.intro)}</p>${(x.bullets ?? []).length
+      ? `<ul>${x.bullets.map((li) => `<li>${esc(li)}</li>`).join('')}</ul>` : ''}`;
+    return `<div class="blk"><h3>${esc(LABEL[k] ?? k)}</h3>${
+      o ? `<div class="cmp"><div class="side"><div class="lbl">${esc(LANG_NAME[LANG] ?? LANG)}</div>${one(b)}</div>
+             <div class="side"><div class="lbl">English</div>${one(o)}</div></div>` : one(b)}</div>`;
+  }).join('');
+}
+
+function renderDetail() {
+  const s = CUR, e = s.content[LANG], en = s.content.en;
+  const k = e.card ?? {}, cd = e.careDetails ?? {}, pr = k.plantRequirements ?? {};
+  const enK = en?.card ?? {}, enCd = en?.careDetails ?? {};
+  const cmp = COMPARE && LANG !== 'en' && en;
+  const fixes = fixMap(e);
+  const tox = k.toxicity ?? {};
+  const cost = (e.usage ?? []).reduce((n, u) => n + (u.model?.startsWith('gpt-5.4')
+    ? u.promptTokens / 1e6 * 2.5 + u.completionTokens / 1e6 * 15
+    : u.promptTokens / 1e6 * .15 + u.completionTokens / 1e6 * .6), 0);
+
+  const dual = (a, b, cls = 'prose') => cmp
+    ? `<div class="cmp"><div class="side"><div class="lbl">${esc(LANG_NAME[LANG])}</div><p class="${cls}">${md(a)}</p></div>
+       <div class="side"><div class="lbl">English</div><p class="${cls}">${md(b)}</p></div></div>`
+    : `<p class="${cls}">${md(a)}</p>`;
+
+  $('sheet').innerHTML = `
+    <button class="back" id="back">← All species</button>
+
+    <header class="specimen">
+      <div class="crumbs">
+        <span>#${s.rank} of 50</span><span class="sep">·</span>
+        <span>${esc(s.taxonomy?.family ?? '—')}</span><span class="sep">·</span>
+        <span>${esc(s.taxonRank ?? '—')}</span><span class="sep">·</span>
+        <span>${s.linkedPlantCards.length} linked card${s.linkedPlantCards.length === 1 ? '' : 's'}</span>
+      </div>
+      <h2 class="binom" style="font-family:var(--serif)">${binom(s.botanicalName)}</h2>
+      <p class="vern">${esc(k.commonName ?? '—')}${(k.commonNames ?? []).length ? ' · ' + esc(k.commonNames.join(' · ')) : ''}</p>
+      <div class="badges">
+        <span class="badge ${badgeClass(tox.status)}">${esc(tox.status ?? 'Unknown')}${
+          (tox.affectedGroups ?? []).length ? ' · ' + esc(tox.affectedGroups.join(', ')) : ''}</span>
+        <span class="badge"><b>${esc(k.careLevel ?? '—')}</b> care</span>
+        <span class="badge">${esc(cd.mainPlantRequirements?.lightPreference ?? '—')}</span>
+        <span class="badge">${esc(cd.mainPlantRequirements?.waterRequirements ?? '—')}</span>
+        <span class="badge">Zone ${esc(cd.mainPlantRequirements?.hardinessZone ?? '—')}</span>
+        ${fixes.size ? `<span class="badge warn">${fixes.size} corrected field${fixes.size === 1 ? '' : 's'}</span>` : ''}
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist">
+      ${Object.keys(s.content).sort().map((l) => `<button class="tab" role="tab" data-lang="${l}"
+        aria-selected="${l === LANG}">${esc(l)}</button>`).join('')}
+      <span class="spacer"></span>
+      ${LANG !== 'en' ? `<label class="chk"><input type="checkbox" id="cmpT" ${COMPARE ? 'checked' : ''}> Compare with English</label>` : ''}
+    </div>
+
+    <section>
+      <h2>Description</h2>
+      ${dual(k.descriptionV2, enK.descriptionV2)}
+      <h2 style="margin-top:18px">Plant needs</h2>
+      <dl class="grid">
+        ${REQ.map(([key, lbl]) => {
+          const f = fixes.get(key);
+          return `<div class="cellv${f ? ' fixed' : ''}"><dt>${esc(lbl)}</dt><dd>${esc(pr[key] ?? '—')}
+            ${f ? `<span class="was">corrected from “${esc(f.from)}”</span>` : ''}</dd></div>`;
+        }).join('')}
+      </dl>
+      ${LANG !== 'en' ? `<p class="note" style="margin-top:12px"><b>Expected:</b> the closed-set values above stay in
+        English in every language. They are translated at request time from the dictionaries, so “Keep soil slightly
+        moist” here is correct, not a missed translation. The free prose is genuinely translated.</p>` : ''}
+    </section>
+
+    <section>
+      <h2>Care plan</h2>
+      <div class="scroller"><table>
+        <thead><tr><th>Action</th><th>Every</th></tr></thead>
+        <tbody>${(k.carePlan ?? []).map((p) => `<tr><td>${esc(p.type)}</td>
+          <td class="num">${p.intervalCount} ${esc(p.frequencyUnit)}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <h2>Care tips &amp; common issues</h2>
+      <div class="tips">
+        ${(k.careTips ?? []).map((t) => `<div class="tip">${esc(t.description)}
+          <span class="src">${esc(String(t.image ?? '').split('/').pop() ?? '')}</span></div>`).join('')}
+        ${(k.commonIssues ?? []).map((t) => `<div class="tip issue">${esc(t.description)}
+          <span class="src">${esc(String(t.image ?? '').split('/').pop() ?? '')}</span></div>`).join('')}
+      </div>
+    </section>
+
+    <section>
+      <h2>Plant needs, in full</h2>
+      <div class="blocks">${blocks(cd.plantNeeds, NEEDS, cmp ? enCd.plantNeeds : null)}</div>
+    </section>
+
+    <section>
+      <h2>Care guide</h2>
+      <div class="blocks">${blocks(cd.careGuide, GUIDE, cmp ? enCd.careGuide : null)}</div>
+    </section>
+
+    <section>
+      <h2>Advice, pests &amp; questions</h2>
+      <div class="blocks">
+        ${(cd.careAdvice ?? []).map((a) => `<div class="blk"><h3>${esc(a.title)}</h3>
+          <p class="lead">${esc(a.description)}</p></div>`).join('')}
+        ${(cd.pestsAndDiseases ?? []).map((p) => `<div class="blk"><h3>${esc(p.name)}</h3>
+          <p class="lead">${esc(p.description)}</p><p class="lead"><em>${esc(p.solution)}</em></p></div>`).join('')}
+      </div>
+      ${(cd.faqs ?? []).length ? `<div style="margin-top:14px">${(cd.faqs ?? []).map((f) =>
+        `<details class="faq"><summary>${esc(f.question)}</summary><p>${esc(f.answer)}</p></details>`).join('')}</div>` : ''}
+    </section>
+
+    <section>
+      <h2>Lore</h2>
+      ${k.symbolismV2 ? dual(k.symbolismV2, enK.symbolismV2) : ''}
+      ${k.randomFact ? dual(k.randomFact, enK.randomFact) : ''}
+      ${k.healingProperties ? dual(k.healingProperties, enK.healingProperties) : ''}
+      ${cd.aboutPlant ? `<p class="prose">${md(cd.aboutPlant)}</p>` : ''}
+    </section>
+
+    <section>
+      <h2>Provenance</h2>
+      <div class="kv">
+        <span>${esc(e.model ?? '—')}</span><span>prompt ${esc(e.promptVersion ?? '—')}</span>
+        <span>${(e.usage ?? []).length} calls</span><span>$${cost.toFixed(3)}</span>
+        <span>species ${s.id}</span><span>entity ${esc(s.plantIdEntityId ?? '—')}</span>
+        ${e.sourceHash ? `<span>hash ${esc(e.sourceHash.slice(0, 12))}</span>` : ''}
+      </div>
+      ${(s.synonyms ?? []).length ? `<p class="mono" style="margin-top:10px;color:var(--muted)">Synonyms:
+        ${esc(s.synonyms.join(' · '))}</p>` : ''}
+      ${s.image ? `<p style="margin-top:10px"><a href="${esc(s.image)}" target="_blank" rel="noopener">Open the
+        re-hosted photo ↗</a> <span class="mono" style="color:var(--faint)">${esc(s.imageAttribution?.licenseName ?? '')}
+        ${esc(s.imageAttribution?.citation ?? '')}</span></p>` : ''}
+      ${fixes.size ? `<div class="scroller" style="margin-top:12px"><table>
+        <thead><tr><th>Check</th><th>Field</th><th>From</th><th>To</th></tr></thead>
+        <tbody>${[...fixes.values()].map((v) => `<tr><td>${esc(v.check)}</td>
+          <td class="wrap">${esc(v.field)}</td><td>${esc(v.from)}</td><td>${esc(v.to)}</td></tr>`).join('')}</tbody>
+      </table></div>` : ''}
+      <p class="mono" style="margin-top:10px;color:var(--faint)">Linked plant cards:
+        ${s.linkedPlantCards.map((c) => c.id).join(', ') || '—'}</p>
+    </section>`;
+
+  $('back')?.addEventListener('click', () => document.getElementById('app').classList.remove('reading'));
+  $('cmpT')?.addEventListener('change', (ev) => { COMPARE = ev.target.checked; renderDetail(); });
+  for (const t of document.querySelectorAll('.tab'))
+    t.addEventListener('click', () => { LANG = t.dataset.lang; renderDetail(); });
+}
+
+(async function start() {
+  const r = await fetch('data/index.json');
+  const d = await r.json();
+  INDEX = d.species;
+  $('env').textContent = d.environment;
+
+  const fill = (el, vals) => { for (const v of vals) if (v) el.insertAdjacentHTML('beforeend', `<option>${esc(v)}</option>`); };
+  fill($('fTox'), [...new Set(INDEX.map((s) => s.toxicity))].sort());
+  fill($('fCare'), [...new Set(INDEX.map((s) => s.careLevel))].sort());
+
+  for (const id of ['q', 'fTox', 'fCare', 'fFix'])
+    $(id).addEventListener('input', renderList);
+  $('list').addEventListener('click', (ev) => {
+    const b = ev.target.closest('.row');
+    if (b) open(Number(b.dataset.id)).catch((err) => {
+      $('sheet').innerHTML = `<div class="empty"><div class="big">Could not load that species</div><p>${esc(err.message)}</p></div>`;
+    });
+  });
+
+  renderList();
+  // Open at rest on the top-ranked specimen, so the page shows what it does.
+  await open(INDEX[0].id);
+  document.getElementById('app').classList.remove('reading');
+})();
+</script>
+</body>
+</html>
