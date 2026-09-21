@@ -79,7 +79,10 @@ a{color:var(--accent)}
 .row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 16px;background:none;border:0;border-bottom:1px solid var(--line-soft);cursor:pointer}
 .row:hover{background:var(--sunk)}
 .row[aria-current="true"]{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
-.chip{width:34px;height:34px;border-radius:6px;display:grid;place-items:center;font-family:var(--serif);font-size:15px;font-weight:600;font-style:italic;color:#fff}
+.chip{position:relative;overflow:hidden;width:34px;height:34px;border-radius:6px;display:grid;place-items:center;font-family:var(--serif);font-size:15px;font-weight:600;font-style:italic;color:#fff}
+/* The monogram is the resting state; the photograph covers it once it loads,
+   and removes itself where the host blocks third-party images. */
+.chip img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .row .nm{min-width:0}
 .row .bn{font-family:var(--serif);font-style:italic;font-size:14.5px;line-height:1.3;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row .cn{color:var(--muted);font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -99,7 +102,13 @@ a{color:var(--accent)}
 .back{display:none;margin:12px 0 0;padding:6px 10px;border:1px solid var(--line);border-radius:7px;background:var(--surface);cursor:pointer;font-size:12.5px}
 @media (max-width:860px){.back{display:inline-block}}
 
-.specimen{padding:22px 0 16px;border-bottom:1px solid var(--line)}
+.specimen{padding:22px 0 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:232px 1fr;gap:20px;align-items:start}
+.specimen>.txt{min-width:0}
+@media (max-width:640px){.specimen{grid-template-columns:1fr;gap:14px}}
+.plate{margin:0;min-width:0}
+.plate img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:var(--sunk);box-shadow:var(--shadow)}
+.plate figcaption{margin-top:6px;font-size:11px;line-height:1.45;color:var(--faint);font-family:var(--mono)}
+.plate figcaption a{color:var(--muted)}
 .crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .crumbs .sep{opacity:.5}
 .binom{margin:6px 0 2px;font-family:var(--serif);font-size:clamp(25px,5vw,34px);font-weight:600;font-style:italic;line-height:1.12;text-wrap:balance}
@@ -186,6 +195,7 @@ td.wrap{white-space:normal;min-width:220px}
       <div class="filters">
         <select id="fTox" aria-label="Filter by toxicity"><option value="">All toxicity</option></select>
         <select id="fCare" aria-label="Filter by care level"><option value="">All care levels</option></select>
+        <select id="fPot" aria-label="Filter by pot size category"><option value="">All pot sizes</option></select>
       </div>
       <label class="chk"><input type="checkbox" id="fFix"> Only species the validators corrected</label>
     </div>
@@ -242,23 +252,38 @@ function badgeClass(t) {
 
 function renderList() {
   const q = $('q').value.trim().toLowerCase();
-  const tox = $('fTox').value, care = $('fCare').value, onlyFix = $('fFix').checked;
+  const tox = $('fTox').value, care = $('fCare').value, pot = $('fPot').value, onlyFix = $('fFix').checked;
   const rows = INDEX.filter((s) =>
     (!q || [s.botanicalName, s.commonName, s.family, s.genus].some((v) => String(v ?? '').toLowerCase().includes(q)))
-    && (!tox || s.toxicity === tox) && (!care || s.careLevel === care) && (!onlyFix || s.fixes > 0));
+    && (!tox || s.toxicity === tox) && (!care || s.careLevel === care)
+    && (!pot || s.potClass === pot) && (!onlyFix || s.fixes > 0));
 
   $('count').textContent = `${rows.length} of ${INDEX.length} species`;
   $('cost').textContent = `$${rows.reduce((n, s) => n + s.cost, 0).toFixed(2)}`;
 
   $('list').innerHTML = rows.map((s) => `
     <button class="row" role="listitem" data-id="${s.id}" aria-current="${CUR && CUR.id === s.id}">
-      <span class="chip" style="background:hsl(${hue(s.family)} 32% 38%)">${esc((s.genus || s.botanicalName || '?')[0])}</span>
+      <span class="chip" style="background:hsl(${hue(s.family)} 32% 38%)">${esc((s.genus || s.botanicalName || '?')[0])}${
+        s.image ? `<img src="${esc(s.image)}" alt="" loading="lazy" decoding="async">` : ''}</span>
       <span class="nm">
         <span class="bn">${binom(s.botanicalName)}</span>
         <span class="cn">${esc(s.commonName || '—')}${s.fixes ? '<i class="flag" title="Validators corrected a field"></i>' : ''}</span>
       </span>
       <span class="rk">#${s.rank}</span>
     </button>`).join('') || '<div class="empty"><p>Nothing matches those filters.</p></div>';
+  dropBrokenImages($('list'));
+}
+
+// Hosts differ on whether they allow third-party images. Where one is blocked
+// the monogram underneath is the finished state, so drop the broken element
+// rather than leaving a torn icon over it.
+function dropBrokenImages(scope) {
+  for (const img of scope.querySelectorAll('img[src]')) {
+    img.addEventListener('error', () => {
+      const fig = img.closest('.plate');
+      (fig ?? img).remove();
+    }, { once: true });
+  }
 }
 
 async function open(id) {
@@ -312,22 +337,33 @@ function renderDetail() {
     <button class="back" id="back">← All species</button>
 
     <header class="specimen">
-      <div class="crumbs">
-        <span>#${s.rank} of 50</span><span class="sep">·</span>
-        <span>${esc(s.taxonomy?.family ?? '—')}</span><span class="sep">·</span>
-        <span>${esc(s.taxonRank ?? '—')}</span><span class="sep">·</span>
-        <span>${s.linkedPlantCards.length} linked card${s.linkedPlantCards.length === 1 ? '' : 's'}</span>
-      </div>
-      <h2 class="binom" style="font-family:var(--serif)">${binom(s.botanicalName)}</h2>
-      <p class="vern">${esc(k.commonName ?? '—')}${(k.commonNames ?? []).length ? ' · ' + esc(k.commonNames.join(' · ')) : ''}</p>
-      <div class="badges">
-        <span class="badge ${badgeClass(tox.status)}">${esc(tox.status ?? 'Unknown')}${
-          (tox.affectedGroups ?? []).length ? ' · ' + esc(tox.affectedGroups.join(', ')) : ''}</span>
-        <span class="badge"><b>${esc(k.careLevel ?? '—')}</b> care</span>
-        <span class="badge">${esc(cd.mainPlantRequirements?.lightPreference ?? '—')}</span>
-        <span class="badge">${esc(cd.mainPlantRequirements?.waterRequirements ?? '—')}</span>
-        <span class="badge">Zone ${esc(cd.mainPlantRequirements?.hardinessZone ?? '—')}</span>
-        ${fixes.size ? `<span class="badge warn">${fixes.size} corrected field${fixes.size === 1 ? '' : 's'}</span>` : ''}
+      ${s.image ? `<figure class="plate">
+        <img src="${esc(s.image)}" alt="Photograph of ${esc(s.botanicalName)}" decoding="async">
+        <figcaption>${esc(s.imageAttribution?.citation || 'Uncredited')} ·
+          ${s.imageAttribution?.licenseUrl
+            ? `<a href="${esc(s.imageAttribution.licenseUrl)}" target="_blank" rel="noopener">${esc(s.imageAttribution?.licenseName ?? 'licence')}</a>`
+            : esc(s.imageAttribution?.licenseName ?? 'licence unknown')}</figcaption>
+      </figure>` : ''}
+      <div class="txt">
+        <div class="crumbs">
+          <span>#${s.rank} of 50</span><span class="sep">·</span>
+          <span>${esc(s.taxonomy?.family ?? '—')}</span><span class="sep">·</span>
+          <span>${esc(s.taxonRank ?? '—')}</span><span class="sep">·</span>
+          <span>${s.linkedPlantCards.length} linked card${s.linkedPlantCards.length === 1 ? '' : 's'}</span>
+        </div>
+        <h2 class="binom" style="font-family:var(--serif)">${binom(s.botanicalName)}</h2>
+        <p class="vern">${esc(k.commonName ?? '—')}${(k.commonNames ?? []).length ? ' · ' + esc(k.commonNames.join(' · ')) : ''}</p>
+        <div class="badges">
+          <span class="badge ${badgeClass(tox.status)}">${esc(tox.status ?? 'Unknown')}${
+            (tox.affectedGroups ?? []).length ? ' · ' + esc(tox.affectedGroups.join(', ')) : ''}</span>
+          <span class="badge"><b>${esc(k.careLevel ?? '—')}</b> care</span>
+          <span class="badge">${esc(cd.mainPlantRequirements?.lightPreference ?? '—')}</span>
+          <span class="badge">${esc(cd.mainPlantRequirements?.waterRequirements ?? '—')}</span>
+          <span class="badge${fixes.has('containerSizeLabel') ? ' warn' : ''}">Pot:
+            <b>${esc(pr.containerSizeLabel ?? '—')}</b></span>
+          <span class="badge">Zone ${esc(cd.mainPlantRequirements?.hardinessZone ?? '—')}</span>
+          ${fixes.size ? `<span class="badge warn">${fixes.size} corrected field${fixes.size === 1 ? '' : 's'}</span>` : ''}
+        </div>
       </div>
     </header>
 
@@ -425,6 +461,7 @@ function renderDetail() {
         ${s.linkedPlantCards.map((c) => c.id).join(', ') || '—'}</p>
     </section>`;
 
+  dropBrokenImages($('sheet'));
   $('back')?.addEventListener('click', () => document.getElementById('app').classList.remove('reading'));
   $('cmpT')?.addEventListener('change', (ev) => { COMPARE = ev.target.checked; renderDetail(); });
   for (const t of document.querySelectorAll('.tab'))
@@ -440,8 +477,13 @@ function renderDetail() {
   const fill = (el, vals) => { for (const v of vals) if (v) el.insertAdjacentHTML('beforeend', `<option>${esc(v)}</option>`); };
   fill($('fTox'), [...new Set(INDEX.map((s) => s.toxicity))].sort());
   fill($('fCare'), [...new Set(INDEX.map((s) => s.careLevel))].sort());
+  // Pot classes are a scale, so order them by size, not by spelling.
+  const POT_ORDER = ['Small', 'Small/Medium', 'Medium', 'Medium/Large', 'Large'];
+  const potRank = (v) => POT_ORDER.indexOf(String(v).split(' to ')[0]);
+  fill($('fPot'), [...new Set(INDEX.map((s) => s.potClass))].filter(Boolean)
+    .sort((a, b) => potRank(a) - potRank(b) || a.localeCompare(b)));
 
-  for (const id of ['q', 'fTox', 'fCare', 'fFix'])
+  for (const id of ['q', 'fTox', 'fCare', 'fPot', 'fFix'])
     $(id).addEventListener('input', renderList);
   $('list').addEventListener('click', (ev) => {
     const b = ev.target.closest('.row');
