@@ -2,7 +2,10 @@
 
 A static explorer for the first Plant Card v3 content wave: 50 plant species
 generated with gpt-5.4 and localized into English, Spanish, German, French and
-Portuguese, as generated on staging on 2026-09-20.
+Portuguese. First generated on staging on 2026-09-20, then regenerated on
+2026-10-08 with prompt version v3.1: pot sizes are now a single category,
+the humidity care action is tied to the humidity band, and the light guidance
+is one short sentence.
 
 Open the site, or read `data/` directly.
 
@@ -28,14 +31,18 @@ Two things surprise people on first read:
   time from dictionaries rather than by the translation model. A German record
   reading `Keep Soil Moist` is correct. The free prose around them is genuinely
   translated.
-- **Eight species carry a `validation` entry.** Those are fields where the
-  generated care text disagreed with the card and deterministic checks overruled
-  it: five on watering, three on pot size. The explorer marks them in place.
+- **Eleven species carry a `validation` entry.** Those are fields where the
+  model's answer disagreed with a deterministic check and was overruled: seven
+  pot-size labels re-derived from the stated diameter, four watering levels in
+  the care details re-aligned with the card. The explorer marks the pot-size
+  ones in place; the watering ones sit in the care-details grid.
 
 ## Provenance
 
 `sourceHash` on a non-English record is the hash of the English content it was
 translated from; a mismatch means the translation is stale. `usage` records the
-token counts for every model call, which is where the cost figures come from.
+token counts for every model call and is cumulative: a regenerated row keeps
+the earlier generation's entries, so the explorer prices only the latest
+generation.
 
 Data is a point-in-time export from staging and is not kept in sync.
