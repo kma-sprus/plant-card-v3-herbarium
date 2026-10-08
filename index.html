@@ -119,6 +119,11 @@ a{color:var(--accent)}
 .badge b{font-weight:600;color:var(--ink)}
 .badge.tox{background:var(--toxic-soft);color:var(--toxic);border-color:color-mix(in srgb,var(--toxic) 30%,transparent)}
 .badge.ok{background:var(--safe-soft);color:var(--safe);border-color:color-mix(in srgb,var(--safe) 30%,transparent)}
+.toxd{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;font-size:12.5px}
+.toxd .k{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+.toxd .pt{display:inline-block;background:var(--toxic-soft);color:var(--toxic);border:1px solid color-mix(in srgb,var(--toxic) 25%,transparent);border-radius:999px;padding:1px 8px;font-size:12px;margin:0 4px 4px 0}
+.toxd .rt{display:inline-block;background:var(--sunk);color:var(--muted);border-radius:999px;padding:1px 8px;font-size:12px;margin:0 4px 4px 0}
+.toxd p{flex-basis:100%;margin:2px 0 0;color:var(--muted);font-size:12.5px;max-width:68ch;line-height:1.5}
 .badge.warn{background:var(--caution-soft);color:var(--caution);border-color:color-mix(in srgb,var(--caution) 35%,transparent)}
 
 .tabs{display:flex;gap:2px;align-items:center;flex-wrap:wrap;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);padding:10px 0;border-bottom:1px solid var(--line-soft);margin-bottom:4px}
@@ -355,7 +360,8 @@ function renderDetail() {
         <p class="vern">${esc(k.commonName ?? '—')}${(k.commonNames ?? []).length ? ' · ' + esc(k.commonNames.join(' · ')) : ''}</p>
         <div class="badges">
           <span class="badge ${badgeClass(tox.status)}">${esc(tox.status ?? 'Unknown')}${
-            (tox.affectedGroups ?? []).length ? ' · ' + esc(tox.affectedGroups.join(', ')) : ''}</span>
+            (tox.affectedGroups ?? []).length ? ' · ' + esc(tox.affectedGroups.join(', ')) : ''}${
+            (tox.toxicParts ?? []).length ? ' · ' + esc(tox.toxicParts.join(', ').toLowerCase()) : ''}</span>
           <span class="badge"><b>${esc(k.careLevel ?? '—')}</b> care</span>
           <span class="badge">${esc(cd.mainPlantRequirements?.lightPreference ?? '—')}</span>
           <span class="badge">${esc(cd.mainPlantRequirements?.waterRequirements ?? '—')}</span>
@@ -364,6 +370,11 @@ function renderDetail() {
           <span class="badge">Zone ${esc(cd.mainPlantRequirements?.hardinessZone ?? '—')}</span>
           ${fixes.size ? `<span class="badge warn">${fixes.size} corrected field${fixes.size === 1 ? '' : 's'}</span>` : ''}
         </div>
+        ${((tox.toxicParts ?? []).length || (tox.exposureRoutes ?? []).length || tox.notes) ? `<div class="toxd">
+          ${(tox.toxicParts ?? []).length ? `<span><span class="k">Toxic parts</span>&nbsp; ${tox.toxicParts.map((x) => `<span class="pt">${esc(x)}</span>`).join('')}</span>` : ''}
+          ${(tox.exposureRoutes ?? []).length ? `<span><span class="k">Exposure</span>&nbsp; ${tox.exposureRoutes.map((x) => `<span class="rt">${esc(x)}</span>`).join('')}</span>` : ''}
+          ${tox.notes ? `<p>${esc(tox.notes)}</p>` : ''}
+        </div>` : ''}
       </div>
     </header>
 
