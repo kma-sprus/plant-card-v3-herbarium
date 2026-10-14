@@ -231,8 +231,19 @@ const LABEL = {
   repotting:'Repotting', cleaning:'Cleaning', inspection:'Inspection', monitoring:'Monitoring',
   cutting:'Cutting', support:'Support', mulching:'Mulching', aeration:'Aeration',
 };
+// The light detail is the fixed definition of the chosen category (the same text the prompt
+// selects by), not model output; the stored placement tip from earlier runs is ignored.
+const LIGHT_DEFS = {
+  'Full sun, direct light': '6+ hrs direct sun daily.',
+  'Partial sun, some direct': '3–6 hrs direct sun daily.',
+  'Bright, indirect light': 'Near window, no direct sun.',
+  'Bright, filtered light': 'Sun through sheer curtain.',
+  'Filtered light, some shade': 'Morning sun, shaded later.',
+  'Low light, indirect': 'Far from bright windows.',
+  'Low light, ambient': 'Minimal natural light.',
+};
 const REQ = [
-  ['lightRequirements','Light'], ['lightRequirementsDetail','Light, in practice'],
+  ['lightRequirements','Light'], ['lightRequirementsDetail','Light, meaning'],
   ['wateringNeeds','Watering'], ['humidity','Humidity'], ['soilType','Soil'],
   ['soilPH','Soil pH'], ['fertilization','Fertilizer'], ['placement','Placement'],
   ['containerSize','Pot size'], ['containerSizeLabel','Pot class'],
@@ -392,7 +403,8 @@ function renderDetail() {
       <dl class="grid">
         ${REQ.map(([key, lbl]) => {
           const f = fixes.get(key);
-          return `<div class="cellv${f ? ' fixed' : ''}"><dt>${esc(lbl)}</dt><dd>${esc(pr[key] ?? '—')}
+          const val = key === 'lightRequirementsDetail' ? LIGHT_DEFS[pr.lightRequirements] : pr[key];
+          return `<div class="cellv${f ? ' fixed' : ''}"><dt>${esc(lbl)}</dt><dd>${esc(val ?? '—')}
             ${f ? `<span class="was">corrected from “${esc(f.from)}”</span>` : ''}</dd></div>`;
         }).join('')}
       </dl>
